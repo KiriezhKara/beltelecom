@@ -46,7 +46,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 </div>
 
 <!-- Шапка -->
-<header class="header">
+<header class="header fixed-header"> <!-- Добавлен класс fixed-header -->
     <div class="container header-inner">
         <div class="logo">
             <a href="index.php<?php echo $langParam; ?>"><img src="images/logo.svg" alt="Белтелеком"></a>

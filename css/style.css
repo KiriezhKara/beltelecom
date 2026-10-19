@@ -1638,3 +1638,132 @@ body.dark-theme .sub-menu a.active {
     border-bottom-color: #A87BCA;
     color: #A87BCA;
 }
+
+/* ============================================
+   ФИКСИРОВАННЫЕ КНОПКИ В ШАПКЕ
+   ============================================ */
+.fixed-header .header-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Фиксированная сетка */
+    gap: 6px;
+    width: 480px; /* Фиксированная ширина */
+}
+
+.fixed-header .btn-header {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================
+   ЧАТ: ФОРМА ДЛЯ ОПЕРАТОРА
+   ============================================ */
+.chat-form {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.chat-form input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid var(--color-mid-purple);
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.chat-form button {
+    padding: 8px 12px;
+    background-color: var(--color-dark-purple);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.chat-form button:hover {
+    background-color: var(--color-medium-purple);
+}
+
+/* ============================================
+   ИСПРАВЛЕНИЕ ТЕМНОЙ ТЕМЫ (фиолетовый светлее)
+   ============================================ */
+body.dark-theme .tariff-card .name,
+body.dark-theme .tariff-card .price,
+body.dark-theme .tariff-card .speed,
+body.dark-theme .tariff-card .features,
+body.dark-theme .info-block h2,
+body.dark-theme .info-block h3,
+body.dark-theme .instruction-block h3,
+body.dark-theme .notes-section h2,
+body.dark-theme .page-title h1 {
+    color: #D4B0FF; /* Более светлый фиолетовый */
+}
+
+body.dark-theme .btn-compare {
+    background-color: #D4B0FF;
+    color: #1a1a2e;
+}
+
+body.dark-theme .btn-compare:hover {
+    background-color: #C090FF;
+}
+
+/* ============================================
+   ПЕЧАТЬ (убираем всё лишнее)
+   ============================================ */
+@media print {
+    /* Скрываем шапку, меню, подвал, бренды, чат, кнопки */
+    .top-menu, 
+    .header, 
+    .section-menu, 
+    .sub-menu, 
+    .footer, 
+    .brands-block, 
+    .ai-chat, 
+    .scroll-top, 
+    .filters, 
+    .other-packages-link, 
+    .print-btn,
+    .no-print,
+    .btn-compare,
+    .archive-label {
+        display: none !important;
+    }
+
+    /* Оставляем только контент */
+    body, html {
+        background: #fff !important;
+        color: #000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Убираем тени и фоны у карточек */
+    .tariff-card, .info-block, .instruction-block {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        background: #fff !important;
+        color: #000 !important;
+        page-break-inside: avoid; /* Не разрывать карточку между страницами */
+    }
+
+    .tariffs-grid {
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    .tariff-card {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 20px;
+    }
+}

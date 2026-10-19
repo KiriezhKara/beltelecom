@@ -101,7 +101,7 @@
     </div>
 </footer>
 
-<!-- ИИ-чат -->
+<!-- ИП-чат-->
 <div class="ai-chat">
     <button class="ai-chat-toggle" id="aiChatToggle">
         <span class="chat-icon">💬</span>
@@ -114,16 +114,11 @@
         </div>
 
         <div class="ai-chat-messages" id="aiChatMessages">
-            <div class="chat-message bot">
-                Здравствуйте! Я помогу вам выбрать тариф. Задайте вопрос.
-            </div>
+            <!-- Сообщения будут добавляться через JS -->
         </div>
 
         <div class="ai-chat-quick" id="aiChatQuick">
-            <button class="quick-btn" data-question="Как подключить пакет услуг?">Как подключить?</button>
-            <button class="quick-btn" data-question="Как платить за пакеты услуг?">Как оплатить?</button>
-            <button class="quick-btn" data-question="Как сменить тарифный план?">Как сменить тариф?</button>
-            <button class="quick-btn" data-question="Как узнать свой номер договора для оплаты услуг?">Где номер договора?</button>
+            <!-- Кнопки будут добавляться через JS -->
         </div>
 
         <div class="ai-chat-input">
@@ -133,6 +128,17 @@
     </div>
 </div>
 
+<script>
+    // Передаем переводы из PHP в JavaScript для таблицы сравнения
+    window.translations = {
+        speed: '<?php echo $t['compare_speed'] ?? 'Скорость Интернета'; ?>',
+        phone: '<?php echo $t['compare_phone'] ?? 'Услуги телефонной связи'; ?>',
+        tv: '<?php echo $t['compare_tv'] ?? 'Услуги телевидения'; ?>',
+        video: '<?php echo $t['compare_video'] ?? 'Видеоконтроль'; ?>',
+        price: '<?php echo $t['compare_price'] ?? 'Цена'; ?>',
+        tariff: '<?php echo $t['compare_tariff'] ?? 'Тариф'; ?>'
+    };
+</script>
 <script src="js/script.js"></script>
 </body>
 </html>

@@ -11,13 +11,13 @@ if (empty($question)) {
 
 $q = mb_strtolower(trim($question));
 
-// Отсеиваем слишком короткие/общие вопросы
-if (mb_strlen($q) < 5) {
+// Отсеиваем слишком короткие вопросы
+if (mb_strlen($q) < 3) {
     echo json_encode(['answer' => 'Уточните вопрос, пожалуйста.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 1. Прямое совпадение
+// 1. Поиск точного совпадения (как было)
 $stmt = $pdo->prepare("SELECT answer FROM faq WHERE LOWER(question) = :q LIMIT 1");
 $stmt->execute(['q' => $q]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -26,7 +26,7 @@ if ($row) {
     exit;
 }
 
-// 2. Поиск по подстроке (вопрос содержит ключевую фразу из базы)
+// 2. Поиск по вхождению подстроки (например, "Как оплатить?")
 $stmt = $pdo->prepare("SELECT answer FROM faq WHERE LOWER(question) LIKE :q LIMIT 1");
 $stmt->execute(['q' => '%' . $q . '%']);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -35,28 +35,43 @@ if ($row) {
     exit;
 }
 
-// 3. Поиск по ключевым словам – только для слов от 5 символов,
-//    и только если таких слов не больше 3 (иначе – слишком общий запрос)
-$stopWords = ['что', 'такое', 'как', 'где', 'когда', 'зачем', 'почему', 'это', 'мне', 'могу', 'можно', 'нужно', 'надо', 'если', 'или', 'для', 'без', 'при', 'чем', 'кто', 'какой', 'какие'];
+// 3. УМНЫЙ ПОИСК ПО КЛЮЧЕВЫМ СЛОВАМ (Главное улучшение!)
+// Разбиваем вопрос на слова, убираем стоп-слова
+$stopWords = ['что', 'такое', 'как', 'где', 'когда', 'зачем', 'почему', 'это', 'мне', 'могу', 'можно', 'нужно', 'надо', 'если', 'или', 'для', 'без', 'при', 'чем', 'кто', 'какой', 'какие', 'быть', 'есть'];
 
 $words = array_filter(
     explode(' ', $q),
     function($w) use ($stopWords) {
-        return mb_strlen($w) >= 5 && !in_array($w, $stopWords);
+        return mb_strlen($w) >= 4 && !in_array($w, $stopWords);
     }
 );
 
-if (count($words) > 0 && count($words) <= 3) {
+if (count($words) > 0) {
+    // Строим динамический SQL запрос с OR для каждого слова
+    $sql = "SELECT answer FROM faq WHERE ";
+    $params = [];
+    $conditions = [];
+    
+    // Ищем вхождения для каждого слова (начинающиеся с этих букв)
     foreach ($words as $word) {
-        $stmt = $pdo->prepare("SELECT answer FROM faq WHERE LOWER(question) LIKE :q LIMIT 1");s
-        $stmt->execute(['q' => '%' . $word . '%']);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row) {
-            echo json_encode(['answer' => $row['answer']], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
+        $conditions[] = "LOWER(question) LIKE ?";
+        $params[] = '%' . $word . '%';
+    }
+    
+    // Сортируем результаты так, чтобы совпадения по ключевым словам (оплата, тариф, подключить) были выше
+    $sql .= implode(" OR ", $conditions) . " LIMIT 3"; // Берем топ-3 результатов
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    if (count($rows) > 0) {
+        // Если нашли несколько, склеиваем их или даем первый
+        $bestAnswer = $rows[0]['answer'];
+        echo json_encode(['answer' => $bestAnswer], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 }
 
-// Если ничего не найдено
-echo json_encode(['answer' => 'Извините, я не нашёл ответ на этот вопрос. Попробуйте переформулировать или позвоните по номеру 123.'], JSON_UNESCAPED_UNICODE);
+// Если ничего не найдено, возвращаем пустой ответ (JS покажет форму)
+echo json_encode(['answer' => null], JSON_UNESCAPED_UNICODE);

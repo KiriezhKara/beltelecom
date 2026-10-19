@@ -1,11 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Хост: 127.0.0.1
--- Время создания: Сен 30 2026 г., 16:21
--- Версия сервера: 10.4.32-MariaDB
--- Версия PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
